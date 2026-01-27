@@ -152,7 +152,9 @@
           <div style="margin-top: 8px" class="row">
             <button id="btnGet">Get(id) y comprobar</button>
           </div>
-        </div>
+            const STORAGE_KEY = "gesportin_server_url";
+            const DEFAULT_URL = "http://localhost:8089";
+            const baseUrl = (localStorage.getItem(STORAGE_KEY) || DEFAULT_URL) + "/equipo";
 
         <div class="card">
           <label>Get page</label>

@@ -42,6 +42,58 @@
         font-weight: 300;
       }
 
+      .config-section {
+        background: #f0f7ff;
+        padding: 16px;
+        border-radius: 6px;
+        margin-bottom: 24px;
+        border: 1px solid #0b74de;
+      }
+
+      .config-section h3 {
+        font-size: 0.9rem;
+        margin: 0 0 12px 0;
+        color: #0b74de;
+        font-weight: 600;
+      }
+
+      .config-input-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .config-input-group input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #0b74de;
+        border-radius: 6px;
+        font-family: monospace;
+        font-size: 0.9rem;
+      }
+
+      .config-input-group button {
+        padding: 8px 16px;
+        background: #0b74de;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .config-input-group button:hover {
+        background: #0a5ab8;
+      }
+
+      .config-status {
+        font-size: 0.85rem;
+        color: #0b74de;
+        margin-top: 8px;
+        font-family: monospace;
+      }
+
       .setup-section {
         background: white;
         padding: 20px;
@@ -187,6 +239,19 @@
 
       <div class="divider"></div>
 
+      <div class="config-section">
+        <h3>⚙️ Configuración del Servidor</h3>
+        <div class="config-input-group">
+          <input id="serverUrl" type="text" placeholder="http://localhost:8089" value="http://localhost:8089" />
+          <button id="btnSaveConfig">Guardar</button>
+        </div>
+        <div class="config-status">
+          Servidor actual: <span id="currentServer">http://localhost:8089</span>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
       <div class="setup-section">
         <h2>⚙️ Configuración Inicial</h2>
         <button class="setup-button" id="btnSetup">Crear datos de prueba (tipousuario → 50 roles → 100 de cada tabla)</button>
@@ -325,7 +390,40 @@
         "usuario",
       ];
 
-      const baseUrl = "http://localhost:8089";
+      const DEFAULT_BASE_URL = "http://localhost:8089";
+      const STORAGE_KEY = "gesportin_server_url";
+
+      // Configuración del servidor
+      function getBaseUrl() {
+        return localStorage.getItem(STORAGE_KEY) || DEFAULT_BASE_URL;
+      }
+
+      function saveServerUrl(url) {
+        localStorage.setItem(STORAGE_KEY, url);
+        updateServerDisplay();
+      }
+
+      function updateServerDisplay() {
+        const url = getBaseUrl();
+        document.getElementById("currentServer").textContent = url;
+        document.getElementById("serverUrl").value = url;
+      }
+
+      document.getElementById("btnSaveConfig").addEventListener("click", () => {
+        const url = document.getElementById("serverUrl").value.trim();
+        if (!url) {
+          alert("Por favor ingresa una URL válida");
+          return;
+        }
+        saveServerUrl(url);
+        alert("Servidor guardado: " + url);
+      });
+
+      document.getElementById("serverUrl").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          document.getElementById("btnSaveConfig").click();
+        }
+      });
 
       // Tabla de orden de creación y cantidad
       const setupOrder = [
@@ -354,7 +452,7 @@
 
       async function fetchCount(endpoint) {
         try {
-          const res = await fetch(`${baseUrl}/${endpoint}/count`);
+          const res = await fetch(`${getBaseUrl()}/${endpoint}/count`);
           if (!res.ok) return "?";
           const count = await res.json();
           return count > 0 ? count.toString() : "0";
@@ -387,12 +485,13 @@
         statusEl.innerHTML = "";
 
         log("Iniciando configuración inicial...");
+        log("Servidor: " + getBaseUrl());
 
         const results = {};
 
         for (const item of setupOrder) {
           try {
-            const url = `${baseUrl}/${item.endpoint}${item.path}`;
+            const url = `${getBaseUrl()}/${item.endpoint}${item.path}`;
             log(`Creando ${item.quantity} ${item.name}...`);
             
             const response = await fetch(url, {
@@ -435,7 +534,10 @@
       }
 
       document.getElementById("btnSetup").addEventListener("click", setupData);
-      window.addEventListener("load", loadCounts);
+      window.addEventListener("load", () => {
+        updateServerDisplay();
+        loadCounts();
+      });
     </script>
   </body>
 </html>

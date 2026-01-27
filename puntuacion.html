@@ -438,9 +438,11 @@
             log("Error en proceso Create/Update/Delete:", e);
           }
         });
-    </script>
-  </body>
-</html>
+    <script>
+      // const baseUrl = window.location.origin + "/puntuacion";
+      const STORAGE_KEY = "gesportin_server_url";
+      const DEFAULT_URL = "http://localhost:8089";
+      const baseUrl = (localStorage.getItem(STORAGE_KEY) || DEFAULT_URL) + "/puntuacion";
 
         function showResult(testNum, message, type = 'info') {
             const resultDiv = document.getElementById(`result${testNum}`);

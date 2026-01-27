@@ -208,7 +208,9 @@ Prueba comentario artículo API</textarea
 
     <script>
       //const baseUrl = window.location.origin + "/comentarioart";
-      const baseUrl = "http://localhost:8089/comentarioart";
+      const STORAGE_KEY = "gesportin_server_url";
+      const DEFAULT_URL = "http://localhost:8089";
+      const baseUrl = (localStorage.getItem(STORAGE_KEY) || DEFAULT_URL) + "/comentarioart";
       const logEl = document.getElementById("log");
       function log(...args) {
         const t = args

@@ -227,7 +227,9 @@
   
   <script>
     // dirección del servidor donde está la API
-    const baseUrl = "http://localhost:8089/tipoarticulo";
+    const STORAGE_KEY = "gesportin_server_url";
+    const DEFAULT_URL = "http://localhost:8089";
+    const baseUrl = (localStorage.getItem(STORAGE_KEY) || DEFAULT_URL) + "/tipoarticulo";
     const logEl = document.getElementById("log");
     // función para escribir mensajes en el área de logs
     function log(...args) {

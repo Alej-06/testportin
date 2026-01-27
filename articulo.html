@@ -211,7 +211,9 @@
     </div>
 
     <script>
-      const baseUrl = "http://localhost:8089/articulo";
+      const STORAGE_KEY = "gesportin_server_url";
+      const DEFAULT_URL = "http://localhost:8089";
+      const baseUrl = (localStorage.getItem(STORAGE_KEY) || DEFAULT_URL) + "/articulo";
       const logEl = document.getElementById("log");
 
       function log(...args) {
